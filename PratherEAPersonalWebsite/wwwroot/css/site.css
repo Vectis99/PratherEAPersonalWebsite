@@ -24,6 +24,17 @@ a {
   border-color: #1861ac;
 }
 
+.skills {
+    display: table;
+    table-layout: fixed;
+}
+
+.skills-header {
+    text-align: center;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
