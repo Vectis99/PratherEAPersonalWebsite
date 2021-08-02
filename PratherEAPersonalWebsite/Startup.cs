@@ -19,12 +19,22 @@ namespace PratherEAPersonalWebsite
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment appEnv)
         {
             Configuration = configuration;
+            Environment = appEnv;
         }
 
         public IConfiguration Configuration { get; }
+
+        /// <summary>
+        /// The application hosting environment.
+        /// </summary>
+        /// <remarks>
+        /// Generally used to differentiate between production and development.
+        /// </remarks>
+        public IWebHostEnvironment Environment { get; }
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -40,11 +50,26 @@ namespace PratherEAPersonalWebsite
                 options.FallbackPolicy = options.DefaultPolicy;
             });*/
             services.AddRazorPages()
-                .AddMvcOptions(options => { })
-                .AddMicrosoftIdentityUI();
+                .AddMvcOptions(options => { });
+            //.AddMicrosoftIdentityUI();
+            
+            if(Environment.IsDevelopment())
+            {
+                services.AddWebOptimizer(minifyJavaScript: false, minifyCss: false);
+            }    
+            else
+            { 
+                services.AddWebOptimizer();
+            }
+
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline. 
+        /// </summary>
+        /// <param name="app"><see cref="IApplicationBuilder"/>.</param>
+        /// <param name="env">The environment to configure the instantiated services for. In general,
+        /// this should be the same as <see cref="Environment"/>.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -57,6 +82,7 @@ namespace PratherEAPersonalWebsite
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseWebOptimizer();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
